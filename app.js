@@ -13,7 +13,7 @@ document.getElementById("scoutingForm").addEventListener("submit", function(e) {
 
 // Export data as CSV
 document.getElementById("exportBtn").addEventListener("click", function() {
-  let csv = "Team,Auto Cones,Climb\n";
+  let csv = "Team,l1,l2,l3,l4,Climb\n";
   scoutingData.forEach(row => {
     csv += `${row.team},${row.autoCones},${row.climb}\n`;
   });
