@@ -15,7 +15,7 @@ document.getElementById("scoutingForm").addEventListener("submit", function(e) {
 document.getElementById("exportBtn").addEventListener("click", function() {
   let csv = "Team,l1,l2,l3,l4,Climb\n";
   scoutingData.forEach(row => {
-    csv += `${row.team},${row.autoCones},${row.climb}\n`;
+    csv += `${row.team},${row.l1},${row.l2},${row.l3},${row.l4},${row.climb}\n`;
   });
   const blob = new Blob([csv], { type: "text/csv" });
   const link = document.createElement("a");
