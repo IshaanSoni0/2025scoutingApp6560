@@ -5,9 +5,9 @@ document.getElementById("scoutingForm").addEventListener("submit", function(e) {
   const entry = {
     team: document.getElementById("teamNumber").value,
     l1: document.getElementById("l1").value,
-    l2: document.getElementById("l1").value,
-    l3: document.getElementById("l1").value,
-    l4: document.getElementById("l1").value,
+    l2: document.getElementById("l2").value,
+    l3: document.getElementById("l3").value,
+    l4: document.getElementById("l4").value,
     climb: document.getElementById("climb").checked
   };
   scoutingData.push(entry);
@@ -26,3 +26,4 @@ document.getElementById("exportBtn").addEventListener("click", function() {
   link.download = "scoutingData.csv";
   link.click();
 });
+
