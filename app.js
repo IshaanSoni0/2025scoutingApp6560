@@ -4,7 +4,10 @@ document.getElementById("scoutingForm").addEventListener("submit", function(e) {
   e.preventDefault();
   const entry = {
     team: document.getElementById("teamNumber").value,
-    autoCones: document.getElementById("autoCones").value,
+    l1: document.getElementById("l1").value,
+    l2: document.getElementById("l1").value,
+    l3: document.getElementById("l1").value,
+    l4: document.getElementById("l1").value,
     climb: document.getElementById("climb").checked
   };
   scoutingData.push(entry);
