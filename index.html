@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FRC Scouting App</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Link to manifest for PWA -->
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -22,12 +21,29 @@
     <button type="submit">Save</button>
   </form>
 
+  <!-- Export Button -->
   <button id="exportBtn">Export Data</button>
+
+  <!-- Table to display saved entries -->
+  <h2>Saved Entries</h2>
+  <table border="1" id="dataTable">
+    <thead>
+      <tr>
+        <th>Team</th>
+        <th>l1</th>
+        <th>l2</th>
+        <th>l3</th>
+        <th>l4</th>
+        <th>Climb</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <!-- Main App Logic -->
   <script src="app.js"></script>
 
-  <!-- SERVICE WORKER REGISTRATION -->
+  <!-- Service Worker Registration -->
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
