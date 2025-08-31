@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,20 +27,35 @@
   <button id="exportBtn">Export Data</button>
 
   <!-- Table to display saved entries -->
-  <h2>Saved Entries</h2>
-  <table border="1" id="dataTable">
-    <thead>
-      <tr>
-        <th>Team</th>
-        <th>l1</th>
-        <th>l2</th>
-        <th>l3</th>
-        <th>l4</th>
-        <th>Climb</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <h2>Non-Exported Entries</h2>
+<table border="1" id="unsyncedTable">
+  <thead>
+    <tr>
+      <th>Team</th>
+      <th>l1</th>
+      <th>l2</th>
+      <th>l3</th>
+      <th>l4</th>
+      <th>Climb</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h2>Exported Entries</h2>
+<table border="1" id="syncedTable">
+  <thead>
+    <tr>
+      <th>Team</th>
+      <th>l1</th>
+      <th>l2</th>
+      <th>l3</th>
+      <th>l4</th>
+      <th>Climb</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
   <!-- Main App Logic -->
   <script src="app.js"></script>
