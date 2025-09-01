@@ -1,4 +1,29 @@
-// ----- Login -----
+// =====================
+// IndexedDB Setup
+// =====================
+let db;
+const request = indexedDB.open('scoutingDB', 1);
+
+request.onupgradeneeded = (event) => {
+  db = event.target.result;
+  if (!db.objectStoreNames.contains('scoutingData')) {
+    const store = db.createObjectStore('scoutingData', { keyPath: 'id', autoIncrement: true });
+    store.createIndex('synced', 'synced', { unique: false });
+  }
+};
+
+request.onsuccess = (event) => {
+  db = event.target.result;
+  loadAndRenderData();
+};
+
+request.onerror = (event) => {
+  console.error('IndexedDB error:', event.target.errorCode);
+};
+
+// =====================
+// Login Handling
+// =====================
 const loginSection = document.getElementById('loginSection');
 const mainApp = document.getElementById('mainApp');
 const loginBtn = document.getElementById('loginBtn');
@@ -12,7 +37,6 @@ if (savedScout) {
   welcomeMessage.textContent = `Logged in as: ${savedScout}`;
 }
 
-// Login button
 loginBtn.addEventListener('click', () => {
   const username = document.getElementById('username').value.trim();
   if (!username) return alert('Enter a username');
@@ -22,16 +46,33 @@ loginBtn.addEventListener('click', () => {
   welcomeMessage.textContent = `Logged in as: ${username}`;
 });
 
-// ----- Load existing data -----
-let scoutingData = JSON.parse(localStorage.getItem('scoutingData')) || [];
+// =====================
+// Helper Functions
+// =====================
+function saveEntry(entry) {
+  const transaction = db.transaction(['scoutingData'], 'readwrite');
+  const store = transaction.objectStore('scoutingData');
+  store.add(entry);
+  transaction.oncomplete = () => loadAndRenderData();
+}
 
-function renderTables() {
+function getAllEntries(callback) {
+  const transaction = db.transaction(['scoutingData'], 'readonly');
+  const store = transaction.objectStore('scoutingData');
+  const request = store.getAll();
+  request.onsuccess = () => callback(request.result);
+}
+
+// =====================
+// Render Tables
+// =====================
+function renderTables(data) {
   const unsyncedTbody = document.querySelector('#unsyncedTable tbody');
   const syncedTbody = document.querySelector('#syncedTable tbody');
   unsyncedTbody.innerHTML = '';
   syncedTbody.innerHTML = '';
 
-  scoutingData.forEach(row => {
+  data.forEach(row => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${row.matchNumber}</td>
@@ -47,8 +88,14 @@ function renderTables() {
   });
 }
 
-// ----- Save new entry -----
-document.getElementById('scoutingForm').addEventListener('submit', function(e){
+function loadAndRenderData() {
+  getAllEntries(renderTables);
+}
+
+// =====================
+// Save New Entry
+// =====================
+document.getElementById('scoutingForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const entry = {
     scout: localStorage.getItem('scoutName'),
@@ -61,32 +108,37 @@ document.getElementById('scoutingForm').addEventListener('submit', function(e){
     climb: document.getElementById('climb').checked,
     synced: false
   };
-  scoutingData.push(entry);
-  localStorage.setItem('scoutingData', JSON.stringify(scoutingData));
-  renderTables();
+  saveEntry(entry);
   this.reset();
   alert('Saved locally!');
 });
 
-// ----- Export data (placeholder for future Sheets sync) -----
-document.getElementById('exportBtn').addEventListener('click', function(){
-  let csv = 'Match,Team,l1,l2,l3,l4,Climb\n';
-  scoutingData.forEach(row => {
-    if (!row.synced) {
-      csv += `${row.matchNumber},${row.team},${row.l1},${row.l2},${row.l3},${row.l4},${row.climb}\n`;
-      row.synced = true;
-    }
-  });
-  localStorage.setItem('scoutingData', JSON.stringify(scoutingData));
-  renderTables();
+// =====================
+// Export Data (placeholder)
+// =====================
+document.getElementById('exportBtn').addEventListener('click', function() {
+  const transaction = db.transaction(['scoutingData'], 'readwrite');
+  const store = transaction.objectStore('scoutingData');
+  const index = store.index('synced');
+  const request = index.getAll(IDBKeyRange.only(false)); // Get all unsynced entries
 
-  // Download CSV as backup
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'scoutingData.csv';
-  link.click();
+  request.onsuccess = () => {
+    const unsyncedEntries = request.result;
+    if (!unsyncedEntries.length) return alert('No new data to export');
+
+    // TODO: Push unsyncedEntries to Google Sheets via webhook
+    // For now, just mark them as synced
+    unsyncedEntries.forEach(entry => {
+      entry.synced = true;
+      store.put(entry);
+    });
+
+    transaction.oncomplete = () => loadAndRenderData();
+    alert('Entries marked as synced (placeholder for Sheets sync)');
+  };
 });
 
-// ----- Render on load -----
-renderTables();
+// =====================
+// Render on Load
+// =====================
+loadAndRenderData();
