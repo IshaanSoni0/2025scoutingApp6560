@@ -29,7 +29,6 @@ const mainApp = document.getElementById('mainApp');
 const loginBtn = document.getElementById('loginBtn');
 const welcomeMessage = document.getElementById('welcomeMessage');
 
-// Check if scout is already logged in
 const savedScout = localStorage.getItem('scoutName');
 if (savedScout) {
   loginSection.style.display = 'none';
@@ -114,31 +113,54 @@ document.getElementById('scoutingForm').addEventListener('submit', function(e) {
 });
 
 // =====================
-// Export Data (placeholder)
+// Sync to Google Sheets
+// =====================
+async function syncToSheets(entries) {
+  if (!navigator.onLine) return alert("No internet connection. Data will sync later.");
+
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbxSBrkraioDlIbD9L3dUdiU6a1hWs54buut3raV7W3Rmhy7P1i4b4r7qlvXUa13vsqGTQ/exec";
+
+  try {
+    const response = await fetch(webAppUrl, {
+      method: "POST",
+      body: JSON.stringify(entries),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const result = await response.json();
+    if (result.status === 'success') {
+      const transaction = db.transaction(['scoutingData'], 'readwrite');
+      const store = transaction.objectStore('scoutingData');
+      entries.forEach(entry => {
+        entry.synced = true;
+        store.put(entry);
+      });
+      transaction.oncomplete = () => loadAndRenderData();
+      alert("Data synced successfully!");
+    }
+  } catch (err) {
+    console.error("Error syncing:", err);
+    alert("Sync failed. Will try again later.");
+  }
+}
+
+// =====================
+// Export Button
 // =====================
 document.getElementById('exportBtn').addEventListener('click', function() {
-  const transaction = db.transaction(['scoutingData'], 'readwrite');
+  const transaction = db.transaction(['scoutingData'], 'readonly');
   const store = transaction.objectStore('scoutingData');
   const index = store.index('synced');
-  const request = index.getAll(IDBKeyRange.only(false)); // Get all unsynced entries
+  const request = index.getAll(IDBKeyRange.only(false));
 
   request.onsuccess = () => {
     const unsyncedEntries = request.result;
     if (!unsyncedEntries.length) return alert('No new data to export');
-
-    // TODO: Push unsyncedEntries to Google Sheets via webhook
-    // For now, just mark them as synced
-    unsyncedEntries.forEach(entry => {
-      entry.synced = true;
-      store.put(entry);
-    });
-
-    transaction.oncomplete = () => loadAndRenderData();
-    alert('Entries marked as synced (placeholder for Sheets sync)');
+    syncToSheets(unsyncedEntries);
   };
 });
 
 // =====================
-// Render on Load
+// Initial Render
 // =====================
 loadAndRenderData();

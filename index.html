@@ -8,19 +8,17 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <h1>FRC Scouting App</h1>
 
-  <!-- Login -->
+  <!-- Login Section -->
   <div id="loginSection">
-    <label>Username: <input type="text" id="username" required></label>
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter your scout name">
     <button id="loginBtn">Login</button>
   </div>
 
-  <!-- Main App (hidden until login) -->
+  <!-- Main App Section -->
   <div id="mainApp" style="display:none;">
-
-    <!-- Welcome message will appear here -->
-    <div id="welcomeMessage"></div>
+    <h2 id="welcomeMessage"></h2>
 
     <!-- Scouting Form -->
     <form id="scoutingForm">
@@ -30,57 +28,54 @@
       <label>l2: <input type="number" id="l2" required></label><br>
       <label>l3: <input type="number" id="l3" required></label><br>
       <label>l4: <input type="number" id="l4" required></label><br>
-      <label>Climb: <input type="checkbox" id="climb"></label><br>
+      <label>Climbed? <input type="checkbox" id="climb"></label><br>
       <button type="submit">Save</button>
     </form>
 
-    <!-- Export Button -->
     <button id="exportBtn">Export Data</button>
 
-    <!-- Unsynced Table -->
-    <h2>Non-Exported Entries</h2>
+    <!-- Tables -->
+    <h3>Non-Exported Entries</h3>
     <table border="1" id="unsyncedTable">
       <thead>
         <tr>
           <th>Match</th>
           <th>Team</th>
-          <th>l1</th>
-          <th>l2</th>
-          <th>l3</th>
-          <th>l4</th>
+          <th>L1</th>
+          <th>L2</th>
+          <th>L3</th>
+          <th>L4</th>
           <th>Climb</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
 
-    <!-- Synced Table -->
-    <h2>Exported Entries</h2>
+    <h3>Exported Entries</h3>
     <table border="1" id="syncedTable">
       <thead>
         <tr>
           <th>Match</th>
           <th>Team</th>
-          <th>l1</th>
-          <th>l2</th>
-          <th>l3</th>
-          <th>l4</th>
+          <th>L1</th>
+          <th>L2</th>
+          <th>L3</th>
+          <th>L4</th>
           <th>Climb</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
-
   </div>
 
   <script src="app.js"></script>
 
   <!-- Service Worker Registration -->
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registered!'))
-        .catch(err => console.log('Service Worker registration failed:', err));
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registered successfully!"))
+        .catch((err) => console.log("Service Worker registration failed:", err));
     }
   </script>
 </body>
