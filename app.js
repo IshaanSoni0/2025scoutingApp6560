@@ -1,16 +1,25 @@
-// Simple offline-first PWA skeleton
-
 // ----- Login -----
 const loginSection = document.getElementById('loginSection');
 const mainApp = document.getElementById('mainApp');
 const loginBtn = document.getElementById('loginBtn');
+const welcomeMessage = document.getElementById('welcomeMessage');
 
+// Check if scout is already logged in
+const savedScout = localStorage.getItem('scoutName');
+if (savedScout) {
+  loginSection.style.display = 'none';
+  mainApp.style.display = 'block';
+  welcomeMessage.textContent = `Logged in as: ${savedScout}`;
+}
+
+// Login button
 loginBtn.addEventListener('click', () => {
   const username = document.getElementById('username').value.trim();
   if (!username) return alert('Enter a username');
   localStorage.setItem('scoutName', username);
   loginSection.style.display = 'none';
   mainApp.style.display = 'block';
+  welcomeMessage.textContent = `Logged in as: ${username}`;
 });
 
 // ----- Load existing data -----
