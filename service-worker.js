@@ -1,15 +1,20 @@
-self.addEventListener("install", (e) => {
+const CACHE_NAME = 'scouting-app-cache-v1';
+const urlsToCache = [
+  './',
+  './index.html',
+  './app.js',
+  './style.css',
+  './manifest.json'
+];
+
+self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open("scouting-app").then((cache) => {
-      return cache.addAll(["index.html", "style.css", "app.js"]);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-self.addEventListener("fetch", (e) => {
+self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
+    caches.match(e.request).then(response => response || fetch(e.request))
   );
 });
